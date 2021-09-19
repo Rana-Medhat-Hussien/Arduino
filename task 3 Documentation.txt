@@ -1,0 +1,21 @@
+1- include the Wire.h library which is used for the I2C communication 
+2-In the setup section
+initialize the wire library and reset the sensor through the power management register.
+3-In the loop section
+start by reading the accelerometer data. The data for each axis is stored in two bytes or registers 
+(see the addresses of these registers from the datasheet of the sensor)
+4-In order to read them all, we start with the first register, and using the requiestFrom() function we request to read all 6 registers for the X, Y and Z axes. Then we read the data from each register, and because the outputs are twos complement, we combine them appropriately to get the correct values
+5-In order to get output values from -1g to +1g, suitable for calculating the angles
+(divide the output with the previously selected sensitivity)
+6-calculate the roll and pitch angles from the accelerometer data.
+7-using the same method we get the gyroscope data
+8- read the six gyroscope registers, combine their data appropriately and divide it by the previously selected sensitivity in order to get the output in degrees per second.
+9-correct the output values with some small calculated error values
+10-fuse the accelerometer and the gyroscope data using a complementary filter. Here, we take 96% of the gyroscope data because it is very accurate and doesn’t suffer from external forces. The down side of the gyroscope is that it drifts, or it introduces error in the output as the time goes on. Therefore, on the long term, we use the data from the accelerometer, 4% in this case, enough to eliminate the gyroscope drift error.
+11-cannot calculate the Yaw from the accelerometer data
+(cannot implement the complementary filter on it)
+12-calculate these errors we can call the calculate_IMU_error() custom function while the sensor is in flat still position
+(do 200 readings for all outputs)
+(sum them and divide them by 200)
+* holding the sensor in flat still position, the expected output values should be 0. So, with this calculation can get the average error the sensor makes.
+13-print the values on the serial monitor
